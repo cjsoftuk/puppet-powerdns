@@ -16,12 +16,20 @@
 #
 
 define powerdns::setting (
+  $instance = undef,
   $ensure = 'present',
   $value  = undef,
 ) {
+
+  if($instance == undef){
+    $target_file = "pdns.conf"
+  }else{
+    $target_file = "pdns-${instance}.conf"
+  }
+
   concat::fragment { $name:
     ensure  => $ensure,
-    target  => "${::powerdns::config::config_path}/pdns.conf",
+    target  => "${::powerdns::config::config_path}/${target_file}",
     content => "${name}=${value}\n",
   }
 }

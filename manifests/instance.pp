@@ -1,6 +1,6 @@
-# == Class: powerdns::config
+# == Define: powerdns::instance
 #
-# Copyright 2016 Joshua M. Keyes <joshua.michael.keyes@gmail.com>
+# Copyright 2016 Chris Malton <chris@swlines.co.uk>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,21 @@
 # limitations under the License.
 #
 
-class powerdns::config {
-  if $caller_module_name != $module_name {
-    fail("Use of private class ${name} from ${caller_module_name}")
+define powerdns::instance(
+  $instance_name   = $name,
+  $settings        = {},
+  $master          = undef,
+  $slave           = undef,
+  $setuid          = undef,
+  $setgid          = undef,
+  $config_owner    = undef,
+  $config_group    = undef,
+  $config_mode     = undef,
+  $config_purge    = undef,
+){
+
+  if(!defined(Class["powerdns"])){
+    fail("You must define the powerdns class before creating an instance")
   }
 
   $default_config_path  = $::osfamily ? {
@@ -26,13 +38,16 @@ class powerdns::config {
     default  => undef,
   }
 
-  $config_purge = pick($::powerdns::config_purge, true)
-  $config_owner = pick($::powerdns::config_owner, 'root')
-  $config_group = pick($::powerdns::config_group, 'root')
-  $config_mode  = pick($::powerdns::config_mode,  '0600')
+  $config_owner = pick($config_owner, 'root')
+  $config_group = pick($config_group, 'root')
+  $config_mode  = pick($config_mode,  '0600')
   $config_path  = pick($::powerdns::config_path,  $default_config_path)
 
-  validate_bool($config_purge)
+  if($instance_name == "default"){
+    $config_file = "pdns.conf"
+  }else{
+    $config_file = "pdns-${instance_name}.conf"
+  }
 
   validate_string($config_owner)
   validate_string($config_group)
@@ -40,77 +55,70 @@ class powerdns::config {
 
   validate_absolute_path($config_path)
 
-  file { $config_path:
-    ensure  => directory,
-    owner   => $config_owner,
-    group   => $config_group,
-    purge   => $config_purge,
-    recurse => $config_purge,
-    force   => $config_purge,
-    mode    => '0755'
-  } ->
-
-  file { "${config_path}/pdns.d":
+  file { "${config_path}/${confd_path}":
     ensure => directory,
     owner  => $config_owner,
     group  => $config_group,
     mode   => '0755'
+    require => File[$config_path],
   } ->
 
-  concat { "${config_path}/pdns.conf":
+  concat { "${config_path}/${config_file}":
     ensure => present,
-    path   => "${config_path}/pdns.conf",
+    path   => "${config_path}/${config_file}",
     owner  => $config_owner,
     group  => $config_group,
     mode   => $config_mode,
   }
 
   powerdns::setting { 'daemon':
+    instance => $instance_name,
     value => 'yes',
   }
 
   powerdns::setting { 'guardian':
+    instance => $instance_name,
     value => 'yes',
   }
 
   powerdns::setting { 'launch':
+    instance => $instance_name,
     value => '',
   }
 
   powerdns::setting { 'config-dir':
+    instance => $instance_name,
     value => $config_path,
   }
 
   powerdns::setting { 'include-dir':
-    value => "${config_path}/pdns.d",
+    instance => $instance_name,
+    value => "${config_path}/${confd_path}",
   }
 
-  if $::powerdns::master {
+  if $master {
     powerdns::setting { 'master':
+      instance => $instance_name,
       value => 'yes',
     }
   }
 
-  if $::powerdns::slave {
+  if $slave {
     powerdns::setting { 'slave':
+      instance => $instance_name,
       value => 'yes',
     }
   }
 
-  if $::powerdns::setuid and $powerdns::setgid {
+  if $setuid and $setgid {
     powerdns::setting { 'setuid':
-      value => $::powerdns::setuid,
+      instance => $instance_name,
+      value => $setuid,
     }
 
     powerdns::setting { 'setgid':
-      value => $::powerdns::setgid,
+      instance => $instance_name,
+      value => $setgid,
     }
-  }
-
-  if empty($::powerdns::settings) == false {
-    $settings = $::powerdns::settings
-    $convert  = "(@settings.inject({}){|o,(k,v)|;o[k]={'value'=>v};o})"
-    $options  = parsejson(inline_template("<%= ${convert}.to_json %>"))
-    create_resources('powerdns::setting', $options)
   }
 }

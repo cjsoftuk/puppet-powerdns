@@ -50,11 +50,28 @@ class powerdns (
   }
 
   contain '::powerdns::install'
-  contain '::powerdns::config'
   contain '::powerdns::service'
 
+  file { $config_path:
+    ensure  => directory,
+    owner   => $config_owner,
+    group   => $config_group,
+    purge   => $config_purge,
+    recurse => $config_purge,
+    force   => $config_purge,
+    mode    => '0755'
+  } ->
   Class['::powerdns::install'] ->
-  Class['::powerdns::config'] ~>
+  powerdns::instance{"default":
+    master => $master,
+    slave => $slave,
+    setuid => $setuid,
+    setgid => $setgid,
+    config_owner => $config_owner,
+    config_group => $config_group,
+    config_path => $config_mode,
+    config_path => $config_path,
+  } ~>
   Class['::powerdns::service']
 
 }
