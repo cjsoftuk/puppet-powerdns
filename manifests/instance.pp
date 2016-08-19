@@ -25,7 +25,6 @@ define powerdns::instance(
   $config_owner    = undef,
   $config_group    = undef,
   $config_mode     = undef,
-  $config_purge    = undef,
 ){
 
   if(!defined(Class["powerdns"])){
@@ -38,9 +37,9 @@ define powerdns::instance(
     default  => undef,
   }
 
-  $config_owner = pick($config_owner, 'root')
-  $config_group = pick($config_group, 'root')
-  $config_mode  = pick($config_mode,  '0600')
+  $_config_owner = pick($config_owner, 'root')
+  $_config_group = pick($config_group, 'root')
+  $_config_mode  = pick($config_mode,  '0600')
   $config_path  = pick($::powerdns::config_path,  $default_config_path)
 
   if($instance_name == "default"){
@@ -49,16 +48,16 @@ define powerdns::instance(
     $config_file = "pdns-${instance_name}.conf"
   }
 
-  validate_string($config_owner)
-  validate_string($config_group)
-  validate_string($config_mode)
+  validate_string($_config_owner)
+  validate_string($_config_group)
+  validate_string($_config_mode)
 
   validate_absolute_path($config_path)
 
   file { "${config_path}/${confd_path}":
     ensure => directory,
-    owner  => $config_owner,
-    group  => $config_group,
+    owner  => $_config_owner,
+    group  => $_config_group,
     mode   => '0755',
     require => File[$config_path],
   } ->
@@ -66,9 +65,9 @@ define powerdns::instance(
   concat { "${config_path}/${config_file}":
     ensure => present,
     path   => "${config_path}/${config_file}",
-    owner  => $config_owner,
-    group  => $config_group,
-    mode   => $config_mode,
+    owner  => $_config_owner,
+    group  => $_config_group,
+    mode   => $_config_mode,
   }
 
   powerdns::setting { 'daemon':
