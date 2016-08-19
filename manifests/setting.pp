@@ -16,6 +16,7 @@
 #
 
 define powerdns::setting (
+  $setting = $name,
   $instance = "default",
   $ensure = 'present',
   $value  = undef,
@@ -30,6 +31,6 @@ define powerdns::setting (
   concat::fragment { $name:
     ensure  => $ensure,
     target  => "${::powerdns::config_path}/${target_file}",
-    content => "${name}=${value}\n",
+    content => "${setting}=${value}\n",
   }
 }
