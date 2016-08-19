@@ -52,7 +52,14 @@ class powerdns (
   contain '::powerdns::install'
   contain '::powerdns::service'
 
-  file { $config_path:
+  $default_config_path  = $::osfamily ? {
+    'Debian' => '/etc/powerdns',
+    'RedHat' => '/etc/pdns',
+    default  => undef,
+  }
+  $_config_path  = pick($::powerdns::config_path,  $default_config_path)
+
+  file { $_config_path:
     ensure  => directory,
     owner   => $config_owner,
     group   => $config_group,
