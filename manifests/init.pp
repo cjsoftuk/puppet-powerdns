@@ -83,8 +83,7 @@ class powerdns (
 
   create_resources("powerdns::instance", $instances)
 
-  if empty($::powerdns::settings) == false {
-    $settings = $::powerdns::settings
+  if empty($settings) == false {
     $convert  = "(@settings.inject({}){|o,(k,v)|;o[k]={'value'=>v};o})"
     $options  = parsejson(inline_template("<%= ${convert}.to_json %>"))
     create_resources('powerdns::setting', $options)
