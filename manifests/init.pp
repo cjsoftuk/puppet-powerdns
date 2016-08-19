@@ -82,9 +82,6 @@ class powerdns (
   Class['::powerdns::service']
 
   create_resources("powerdns::instance", $instances)
-
-  if empty($settings) == false {
-    create_resources('powerdns::setting', $settings)
-  }
+  create_resources('powerdns::setting', $settings)
 
 }
