@@ -77,7 +77,6 @@ class powerdns (
     config_owner => $config_owner,
     config_group => $config_group,
     config_mode => $config_mode,
-    config_path => $config_path,
   } ~>
   Class['::powerdns::service']
 
