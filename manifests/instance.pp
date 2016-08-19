@@ -44,8 +44,10 @@ define powerdns::instance(
 
   if($instance_name == "default"){
     $config_file = "pdns.conf"
+    $confd_path = "pdns.d"
   }else{
     $config_file = "pdns-${instance_name}.conf"
+    $confd_path = "pdns-${instance_name}.d"
   }
 
   validate_string($_config_owner)
