@@ -59,7 +59,7 @@ define powerdns::instance(
     ensure => directory,
     owner  => $config_owner,
     group  => $config_group,
-    mode   => '0755'
+    mode   => '0755',
     require => File[$config_path],
   } ->
 
