@@ -72,52 +72,61 @@ define powerdns::instance(
     mode   => $_config_mode,
   }
 
-  powerdns::setting { 'daemon':
+  powerdns::setting { '${instance_name}-daemon':
+    setting => "daemon",
     instance => $instance_name,
     value => 'yes',
   }
 
-  powerdns::setting { 'guardian':
+  powerdns::setting { '${instance_name}-guardian':
+    setting => "guardian",
     instance => $instance_name,
     value => 'yes',
   }
 
-  powerdns::setting { 'launch':
+  powerdns::setting { '${instance_name}-launch':
+    setting => "launch",
     instance => $instance_name,
     value => '',
   }
 
-  powerdns::setting { 'config-dir':
+  powerdns::setting { '${instance_name}-config-dir':
+    setting => "config-dir",
     instance => $instance_name,
     value => $config_path,
   }
 
-  powerdns::setting { 'include-dir':
+  powerdns::setting { '${instance_name}-include-dir':
+    setting => "include-dir",
     instance => $instance_name,
     value => "${config_path}/${confd_path}",
   }
 
   if $master {
-    powerdns::setting { 'master':
+    powerdns::setting { '${instance_name}-master':
+      setting => "master",
       instance => $instance_name,
       value => 'yes',
     }
   }
 
   if $slave {
-    powerdns::setting { 'slave':
+    powerdns::setting { '${instance_name}-slave':
+      setting => "slave",
       instance => $instance_name,
       value => 'yes',
     }
   }
 
   if $setuid and $setgid {
-    powerdns::setting { 'setuid':
+    powerdns::setting { '${instance_name}-setuid':
+      setting => "setuid",
       instance => $instance_name,
       value => $setuid,
     }
 
-    powerdns::setting { 'setgid':
+    powerdns::setting { '${instance_name}-setgid':
+      setting => "setgid",
       instance => $instance_name,
       value => $setgid,
     }
