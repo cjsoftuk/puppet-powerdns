@@ -134,7 +134,7 @@ define powerdns::instance(
 
   if($instance_name != "default"){
     $service_name   = pick($::powerdns::service_name,   'pdns')
-    $_service_name  = "${service_name}@${instance_name" 
+    $_service_name  = "${service_name}@${instance_name}" 
     $service_ensure = pick($::powerdns::service_ensure, 'running')
     $service_enable = pick($::powerdns::service_enable, true)
 
