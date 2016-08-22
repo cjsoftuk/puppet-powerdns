@@ -156,6 +156,6 @@ define powerdns::instance(
     $mysql_backend = {
       $instance_name => $backends[gmysql]
     }
-    create_resources("powerdns::backend::gmysql", $mysql_backend);
+    create_resources("powerdns::backend::gmysql", $mysql_backend)
   }
 }

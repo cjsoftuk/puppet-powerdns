@@ -27,7 +27,7 @@ define powerdns::backend::gmysql (
   $backend_package_name = 'pdns-backend-mysql'
 
   package { "${instance_name}-${backend_package_name}":
-    package_name => $backend_package_name
+    name => $backend_package_name,
     ensure => $::powerdns::install::package_ensure,
   }
 
@@ -46,7 +46,7 @@ define powerdns::backend::gmysql (
     $conf_file = "${::powerdns::config::config_path}/pdns-${instance_name}.d/gmysql.conf"
   }
 
-  file { $conf_file:
+  file { "${conf_file}":
     ensure  => present,
     content => template("${module_name}/backend.conf.erb"),
     owner   => $::powerdns::config::config_owner,
