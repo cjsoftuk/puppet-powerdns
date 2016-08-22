@@ -152,10 +152,5 @@ define powerdns::instance(
     }
   }
 
-  if($backends[gmysql] != undef){
-    $mysql_backend = {
-      $instance_name => $backends[gmysql]
-    }
-    create_resources("powerdns::backend::gmysql", $mysql_backend)
-  }
+  create_resources("powerdns::backend", $backends)
 }

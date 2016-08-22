@@ -31,6 +31,8 @@ define powerdns::backend::gmysql (
     ensure => $::powerdns::install::package_ensure,
   }
 
+  $backend_name = "gmysql"
+
   $options = {
     'host'     => $host,
     'user'     => $user,
