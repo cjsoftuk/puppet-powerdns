@@ -26,9 +26,10 @@ define powerdns::backend::gmysql (
 ) {
   $backend_package_name = 'pdns-backend-mysql'
 
-  package { "${instance_name}-${backend_package_name}":
-    name => $backend_package_name,
-    ensure => $::powerdns::install::package_ensure,
+  if(!defined(Package["${backend_package_name}"])){
+    package { "${backend_package_name}":
+      ensure => $::powerdns::install::package_ensure,
+    }
   }
 
   $backend_name = "gmysql"
