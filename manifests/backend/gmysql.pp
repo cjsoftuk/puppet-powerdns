@@ -41,9 +41,9 @@ define powerdns::backend::gmysql (
   }
 
   if($instance_name == "default"){
-    $conf_file = "${::powerdns::config::config_path}/pdns.d/gmysql.conf"
+    $conf_file = "${::powerdns::config_path}/pdns.d/gmysql.conf"
   }else{
-    $conf_file = "${::powerdns::config::config_path}/pdns-${instance_name}.d/gmysql.conf"
+    $conf_file = "${::powerdns::config_path}/pdns-${instance_name}.d/gmysql.conf"
   }
 
   file { "${conf_file}":
