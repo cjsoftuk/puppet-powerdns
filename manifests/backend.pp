@@ -29,13 +29,10 @@ define powerdns::backend (
     fail("This module does not support the ${backend_name} backend for PowerDNS!")
   }
 
-  # Ensure PowerDNS is installed before the backend is evaluated.
-  Class['::powerdns::install'] -> Class[$backend]
-
-  # Ensure the backend notifies PowerDNS when things change.
-  Class[$backend] ~> Class['::powerdns::service']
-
   # Evaluate the backend with any specified options.
   $class = { "${name}_internal" => $options }
-  create_resources("${backend}", $class)
+  # Ensure PowerDNS is installed before the backend is evaluated.
+  Class['::powerdns::install'] ->
+  create_resources("${backend}", $class) ~> 
+  Class['::powerdns::service']
 }

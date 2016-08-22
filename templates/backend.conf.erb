@@ -2,5 +2,5 @@
 launch+=<%= @backend_name %>
 
 <%- @options.each do |key, value| -%>
-<%= backend -%>-<%= key -%>=<%= value %>
+<%= @backend_name -%>-<%= key -%>=<%= value %>
 <%- end -%>
