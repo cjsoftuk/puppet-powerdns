@@ -1,5 +1,5 @@
-# PowerDNS '<%= backend_name %>' Backend Configuration
-launch+=<%= backend_name %>
+# PowerDNS '<%= @backend_name %>' Backend Configuration
+launch+=<%= @backend_name %>
 
 <%- @options.each do |key, value| -%>
 <%= backend -%>-<%= key -%>=<%= value %>
