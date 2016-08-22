@@ -25,6 +25,7 @@ define powerdns::instance(
   $config_owner    = undef,
   $config_group    = undef,
   $config_mode     = undef,
+  $backends        = {},
 ){
 
   if(!defined(Class["powerdns"])){
@@ -148,6 +149,12 @@ define powerdns::instance(
     service { $_service_name:
         ensure => $service_ensure,
         enable => $service_enable,
+    }
+  }
+
+  if($backends[gmysql] != undef){
+    $mysql_backend = {
+      $instance_name: $backends[gmysql]
     }
   }
 }
