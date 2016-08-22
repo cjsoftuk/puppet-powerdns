@@ -36,6 +36,6 @@ define powerdns::backend (
   Class[$backend] ~> Class['::powerdns::service']
 
   # Evaluate the backend with any specified options.
-  $class = { "::powerdns::backend::${backend_name}" => $options }
-  create_resources('class', $class)
+  $class = { "${name}_internal" => $options }
+  create_resources("${backend}", $class)
 }
