@@ -14,14 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 define powerdns::setting (
+  $setting = $name,
+  $instance = "default",
   $ensure = 'present',
   $value  = undef,
 ) {
+
+  if($instance == "default"){
+    $target_file = "pdns.conf"
+  }else{
+    $target_file = "pdns-${instance}.conf"
+  }
+
   concat::fragment { $name:
     ensure  => $ensure,
-    target  => "${::powerdns::config::config_path}/pdns.conf",
-    content => "${name}=${value}\n",
+    target  => "${::powerdns::config_path}/${target_file}",
+    content => "${setting}=${value}\n",
   }
 }
+

@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-class powerdns::backend::gmysql (
+define powerdns::backend::gmysql (
+  $instance_name = $name,
   $host,
   $user,
   $password,
@@ -25,9 +25,13 @@ class powerdns::backend::gmysql (
 ) {
   $backend_package_name = 'pdns-backend-mysql'
 
-  package { $backend_package_name:
-    ensure => $::powerdns::install::package_ensure,
+  if(!defined(Package["${backend_package_name}"])){
+    package { "${backend_package_name}":
+      ensure => $::powerdns::install::package_ensure,
+    }
   }
+
+  $backend_name = "gmysql"
 
   $options = {
     'host'     => $host,
@@ -38,7 +42,13 @@ class powerdns::backend::gmysql (
     'dnssec'   => $dnssec
   }
 
-  file { "${::powerdns::config::config_path}/pdns.d/gmysql.conf":
+  if($instance_name == "default"){
+    $conf_file = "${::powerdns::config_path}/pdns.d/gmysql.conf"
+  }else{
+    $conf_file = "${::powerdns::config_path}/pdns-${instance_name}.d/gmysql.conf"
+  }
+
+  file { "${conf_file}":
     ensure  => present,
     content => template("${module_name}/backend.conf.erb"),
     owner   => $::powerdns::config::config_owner,
@@ -46,3 +56,4 @@ class powerdns::backend::gmysql (
     mode    => $::powerdns::config::config_mode,
   }
 }
+

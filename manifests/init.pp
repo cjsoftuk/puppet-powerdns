@@ -17,6 +17,7 @@
 
 class powerdns (
   $settings        = {},
+  $instances       = {},
   $master          = undef,
   $slave           = undef,
   $setuid          = undef,
@@ -31,6 +32,7 @@ class powerdns (
   $config_mode     = undef,
   $config_path     = undef,
   $config_purge    = undef,
+  $backends        = {},
 ) {
   # Fail fast if we're not using a new Puppet version.
   if versioncmp($::puppetversion, '3.7.0') < 0 {
@@ -50,11 +52,39 @@ class powerdns (
   }
 
   contain '::powerdns::install'
-  contain '::powerdns::config'
   contain '::powerdns::service'
 
+  $default_config_path  = $::osfamily ? {
+    'Debian' => '/etc/powerdns',
+    'RedHat' => '/etc/pdns',
+    default  => undef,
+  }
+  $_config_path  = pick($::powerdns::config_path,  $default_config_path)
+
+  file { $_config_path:
+    ensure  => directory,
+    owner   => $config_owner,
+    group   => $config_group,
+    purge   => $config_purge,
+    recurse => $config_purge,
+    force   => $config_purge,
+    mode    => '0755'
+  } ->
   Class['::powerdns::install'] ->
-  Class['::powerdns::config'] ~>
+  powerdns::instance{"default":
+    master => $master,
+    slave => $slave,
+    setuid => $setuid,
+    setgid => $setgid,
+    config_owner => $config_owner,
+    config_group => $config_group,
+    config_mode => $config_mode,
+    backends => $backends,
+  } ~>
   Class['::powerdns::service']
 
+  create_resources("powerdns::instance", $instances)
+  create_resources('powerdns::setting', $settings)
+
 }
+
